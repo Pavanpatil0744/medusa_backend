@@ -1,26 +1,40 @@
-# .github/workflows/publish.yml
-name: Generate a build and push to another branch
+# .github/workflows/build.yml
+name: Build Medusa Project
 
 on:
   push:
     branches:
-      - master # Remove this line if your primary branch is "main"
-      - main # Remove this line if your primary branch is "master"
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build and Push
+
     steps:
-      - name: git-checkout
+      - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install all dependencies
-        run: npm install
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
 
-      - name: Build
-        run: npm run build # The build command of your project
-    
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: yarn build
+
+      # Add the steps to create and push to the new branch 'branch2'
+      - name: Create New Branch
+        run: git checkout -b branch2
+
+      - name: Copy Build Files
+        run: |
+          mkdir -p build
+          cp -R dist/* build/
+
+
       - name: Push
         uses: s0/git-publish-subdir-action@develop
         env:
@@ -29,3 +43,4 @@ jobs:
           FOLDER: build # The directory where your assets are generated
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
           MESSAGE: "Build: ({sha}) {msg}" # The commit message
+
