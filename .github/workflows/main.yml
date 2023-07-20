@@ -36,4 +36,4 @@ jobs:
           git commit -m "Compiled code"
 
           # Add the following line to use the access token from secrets
-          git push https://$GITHUB_TOKEN@github.com/Pavanpatil0744/medusa_backend.git compiled-code
+          git push https://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@github.com/Pavanpatil0744/medusa_backend.git compiled-code
