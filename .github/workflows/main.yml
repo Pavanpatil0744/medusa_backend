@@ -1,50 +1,31 @@
-name: Build Medusa Project
+# .github/workflows/publish.yml
+name: Generate a build and push to another branch
 
 on:
   push:
     branches:
-      - main
+      - master # Remove this line if your primary branch is "main"
+      - main # Remove this line if your primary branch is "master"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    name: Build and Push
     steps:
-      - name: Checkout Code
+      - name: git-checkout
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
+      - name: Install all dependencies
+        run: npm install
 
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Build Project
-        run: yarn build
-
-      # Add the steps to create and push to the new branch 'branch2'
-      - name: Set Git Config
-        run: |
-          git config user.email "pavan.patilo744@intelliconnectq.com"
-          git config user.name "pavan patil"
-
-      - name: Create New Branch
-        run: git checkout -b branch2
-
-      - name: Copy Build Files
-        run: |
-          mkdir -p build
-          cp -R dist/* build/
-          git add build/
-          git commit -m "Add build files to branch2"
-
-      - name: Push to New Branch
-        uses: actions/checkout@v2 # Note: The 'actions/checkout' is used to access the repository again, not for pushing
-        with:
-          ref: branch2
+      - name: Build
+        run: npm run build # The build command of your project
+    
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
         env:
+          REPO: self
+          BRANCH: build # The branch name where you want to push the assets
+          FOLDER: build # The directory where your assets are generated
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
-
-      # Continue with the rest of the workflow, if needed
+          MESSAGE: "Build: ({sha}) {msg}" # The commit message
