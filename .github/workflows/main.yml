@@ -1,5 +1,6 @@
+
 # .github/workflows/build.yml
-name: Build Medusa Project
+name: Build Medusa Project and Push to S3 Bucket
 
 on:
   push:
@@ -34,4 +35,15 @@ jobs:
           mkdir -p build
           cp -R dist/* build/
 
+      # Install and configure AWS CLI
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ap-south-1
+      # Upload build files to S3 bucket
+      - name: Push to S3 Bucket
+        run: |
+          aws s3 sync build/ s3://your-s3-bucket-name/ --delete
 
+      # Continue with the rest of the workflow, if needed
