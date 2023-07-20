@@ -1,5 +1,3 @@
-
-# .github/workflows/build.yml
 name: Build Medusa Project
 
 on:
@@ -27,6 +25,11 @@ jobs:
         run: yarn build
 
       # Add the steps to create and push to the new branch 'branch2'
+      - name: Set Git Config
+        run: |
+          git config user.email "pavan.patilo744@intelliconnectq.com"
+          git config user.name "pavan patil"
+
       - name: Create New Branch
         run: git checkout -b branch2
 
@@ -40,7 +43,7 @@ jobs:
       - name: Push to New Branch
         uses: actions/checkout@v2 # Note: The 'actions/checkout' is used to access the repository again, not for pushing
         with:
-          ref: build
+          ref: branch2
         env:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
 
