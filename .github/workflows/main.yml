@@ -1,4 +1,4 @@
-name: Build Medusa Project
+name: Build and Copy to New Branch
 
 on:
   push:
@@ -23,3 +23,12 @@ jobs:
 
       - name: Build Project
         run: yarn build
+
+      - name: Create New Branch
+        run: |
+          git checkout -b compiled-code
+          git add dist/
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git commit -m "Compiled code"
+          git push origin compiled-code
