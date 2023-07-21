@@ -1,47 +1,38 @@
-# .github/workflows/build.yml
-name: Build Medusa Project and Push to S3 Bucket
+name: Build and Push
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '14'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Build Project
+      - name: Build project
         run: npm run build
 
-      # Add the steps to create and push to the new branch 'branch2'
-      - name: Create New Branch
-        run: git checkout -b branch2
+      - name: Create new branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b new-branch
 
-      - name: Copy Build Files
+      - name: Commit and push changes
         run: |
-          mkdir -p build
-          cp -R dist/* build/
-      # Install and configure AWS CLI
-      - name: Configure AWS CLI
-        run: |
-          npm install -g aws-cli
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region ap-south-1
-      # Upload build files to S3 bucket
-      - name: Push to S3 Bucket
-        run: |
-          aws s3 sync build/ s3://medusa-backend/ --delete
-      # Continue with the rest of the workflow,
+          git add .
+          git commit -m "Build and push changes from GitHub Actions"
+          git push origin new-branch
+
